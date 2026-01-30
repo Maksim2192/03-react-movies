@@ -8,7 +8,8 @@ import MovieModal from '../MovieModal/MovieModal';
 import { fetchMovies } from '../../services/movieService';
 import type { Movie } from '../../types/movie';
 
-const TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0M2YxZWM1MTU4ZWJkNDI4ODNkYWQzOTEyY2IzM2UzNSIsIm5iZiI6MTc2OTY4MTY4NS4xODgsInN1YiI6IjY5N2IzMzE1YzRjYTY0YjRhN2E3ZWMyYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ojZtBvEVmvE635JOQqdbVUFRF-4NUeaxpVSLjDHubD0'; // заміни на свій токен
+const TOKEN =
+  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0M2YxZWM1MTU4ZWJkNDI4ODNkYWQzOTEyY2IzM2UzNSIsIm5iZiI6MTc2OTY4MTY4NS4xODgsInN1YiI6IjY5N2IzMzE1YzRjYTY0YjRhN2E3ZWMyYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ojZtBvEVmvE635JOQqdbVUFRF-4NUeaxpVSLjDHubD0';
 
 function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -16,8 +17,17 @@ function App() {
   const [error, setError] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
+  const handleSearch = async (formData: FormData) => {
   
-  const handleSearch = async (query: string) => {
+    const value = formData.get('query');
+
+    if (typeof value !== 'string' || !value.trim()) {
+      toast.error('Please enter your search query.');
+      return;
+    }
+
+    const query = value.trim();
+
     setMovies([]);
     setError(false);
     setLoading(true);
@@ -39,12 +49,10 @@ function App() {
     }
   };
 
- 
   const handleSelectMovie = (movie: Movie) => {
     setSelectedMovie(movie);
   };
 
- 
   const handleCloseModal = () => {
     setSelectedMovie(null);
   };
@@ -52,7 +60,8 @@ function App() {
   return (
     <div>
       <Toaster />
-      <SearchBar onSubmit={handleSearch} />
+      <SearchBar action={handleSearch} />
+
       {loading && <Loader />}
       {error && !loading && <ErrorMessage />}
       {!loading && !error && movies.length > 0 && (
